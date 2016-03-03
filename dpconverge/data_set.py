@@ -130,7 +130,7 @@ class DataSet(object):
 
         ds_comp = self.results[self.results.component == component]
 
-        for param in ['loc0', 'loc1']:
+        for param in ['loc'+str(i) for i in range(self._parameter_count)]:
             fig = pyplot.figure(fig_n, figsize=(16, 4))
             pyplot.title(
                 'Component: %d, Param: %s' %
