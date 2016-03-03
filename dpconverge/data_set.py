@@ -126,20 +126,22 @@ class DataSet(object):
         )
 
     def plot_iteration_traces(self, component):
-        fig_n = 0
+        fig = pyplot.figure(figsize=(16, 4 * self._parameter_count))
+        subplot_n = 1
 
         ds_comp = self.results[self.results.component == component]
 
         for param in ['loc'+str(i) for i in range(self._parameter_count)]:
-            fig = pyplot.figure(fig_n, figsize=(16, 4))
-            pyplot.title(
+            ax = fig.add_subplot(self._parameter_count, 1, subplot_n)
+
+            ax.set_title(
                 'Component: %d, Param: %s' %
                 (component, param)
             )
 
-            ax = fig.add_subplot(111)
             ax.set_xlim(0, len(ds_comp.iteration))
             ax.set_ylim(ds_comp[param].min()/1.5, ds_comp[param].max())
+
             ax.plot(
                 ds_comp.iteration,
                 ds_comp[param],
@@ -161,6 +163,6 @@ class DataSet(object):
                 lw='1',
                 alpha=0.5)
 
-            fig_n += 1
+            subplot_n += 1
 
         pyplot.show()
