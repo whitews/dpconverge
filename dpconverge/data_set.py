@@ -157,7 +157,7 @@ class DataSet(object):
             ax2.fill_between(
                 ds_comp.iteration,
                 ds_comp.weight,
-                where=ds_comp.iteration > 0,
+                where=ds_comp.iteration >= 0,
                 interpolate=True,
                 color='salmon',
                 lw='1',
