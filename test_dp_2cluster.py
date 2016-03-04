@@ -21,7 +21,7 @@ for i, center in enumerate(centers):
 
 ds.plot(ds.classifications, x_lim=[0, 6], y_lim=[0, 6])
 ds.cluster(
-    component_count=2,
+    component_count=4,
     burn_in=2,
     iteration_count=50,
     random_seed=123
