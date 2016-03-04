@@ -152,7 +152,7 @@ class DataSet(object):
 
             ax2 = ax.twinx()
             ax2.set_xlim(0, len(ds_comp.iteration))
-            ax2.set_ylim(ds_comp.weight.min(), ds_comp.weight.max() * 1.5)
+            ax2.set_ylim(0.0, 1.0)
             ax2.plot(ds_comp.iteration, ds_comp.weight, 'sienna', lw='0.5', alpha=0.5)
             ax2.fill_between(
                 ds_comp.iteration,
