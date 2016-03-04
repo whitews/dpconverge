@@ -23,6 +23,10 @@ class DataSet(object):
     def classifications(self):
         return self.blobs.keys()
 
+    @property
+    def parameter_count(self):
+        return self._parameter_count
+
     def add_blob(self, classification, blob_data):
         if not isinstance(classification, int):
             raise TypeError("'classification' must be an integer")
@@ -153,7 +157,13 @@ class DataSet(object):
             ax2 = ax.twinx()
             ax2.set_xlim(0, len(ds_comp.iteration))
             ax2.set_ylim(0.0, 1.0)
-            ax2.plot(ds_comp.iteration, ds_comp.weight, 'sienna', lw='0.5', alpha=0.5)
+            ax2.plot(
+                ds_comp.iteration,
+                ds_comp.weight,
+                'sienna',
+                lw='0.5',
+                alpha=0.5
+            )
             ax2.fill_between(
                 ds_comp.iteration,
                 ds_comp.weight,
