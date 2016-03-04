@@ -108,6 +108,9 @@ class DataSet(object):
         return pd.DataFrame(component_dicts)
 
     def cluster(self, component_count, burn_in, iteration_count, random_seed):
+        if self.results is not None:
+            raise ValueError("Data set already has clustering results")
+
         model = cluster.DPMixtureModel(
             component_count,
             iteration_count,
