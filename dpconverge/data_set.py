@@ -4,6 +4,21 @@ from matplotlib import pyplot
 from itertools import cycle
 from flowstats import cluster
 
+colors = [
+    'dodgerblue',
+    'gold',
+    'red',
+    'green',
+    'orange',
+    'purple',
+    'darkolivegreen',
+    'darkblue',
+    'goldenrod',
+    'indianred',
+    'seagreen',
+    'peru'
+]
+
 
 class DataSet(object):
     """
@@ -17,6 +32,7 @@ class DataSet(object):
         self._data = np.empty([0, parameter_count])
         self.blobs = {}
         self.length = None
+        self._raw_results = None  # holds DPMixture object
         self.results = None
 
     @property
@@ -42,7 +58,7 @@ class DataSet(object):
         else:
             self.blobs[classification] = blob_data
 
-    def plot(
+    def plot_blobs(
             self,
             classifications,
             x=0,
@@ -58,29 +74,14 @@ class DataSet(object):
         if y_lim is not None:
             pyplot.ylim(ymin=y_lim[0], ymax=y_lim[1])
 
-        colors = cycle(
-            [
-                'dodgerblue',
-                'gold',
-                'red',
-                'green',
-                'orange',
-                'purple',
-                'darkolivegreen',
-                'darkblue',
-                'goldenrod',
-                'indianred',
-                'seagreen',
-                'peru'
-            ]
-        )
+        color_cycle = cycle(colors)
 
         for c in classifications:
             pyplot.scatter(
                 self.blobs[c][:, x],
                 self.blobs[c][:, y],
                 s=5,
-                c=colors.next(),
+                c=color_cycle.next(),
                 edgecolors='none'
             )
 
@@ -118,7 +119,7 @@ class DataSet(object):
             model='dp'
         )
 
-        fitted_results = model.fit(
+        self._raw_results = model.fit(
             np.vstack(self.blobs.values()),
             True,
             seed=random_seed,
@@ -127,7 +128,7 @@ class DataSet(object):
         )
 
         self.results = self._create_results_dataframe(
-            fitted_results,
+            self._raw_results,
             component_count,
             iteration_count
         )
@@ -177,5 +178,47 @@ class DataSet(object):
                 alpha=0.5)
 
             subplot_n += 1
+
+        pyplot.show()
+
+    def plot_classifications(self, iteration, x=0, y=1, x_lim=None, y_lim=None):
+        dp_mixture_iter = self._raw_results.get_iteration(iteration)
+
+        raw_data = np.vstack(self.blobs.values())
+        classifications = dp_mixture_iter.classify(raw_data)
+
+        pyplot.figure(figsize=(8, 8))
+
+        _colors = pyplot.cm.rainbow(np.linspace(0, 1, len(dp_mixture_iter)))
+        cs = [_colors[i] for i in classifications]
+
+        pyplot.scatter(
+            raw_data[:, x],
+            raw_data[:, y],
+            s=8,
+            c=cs,
+            edgecolors='none',
+            alpha=1.0
+        )
+
+        if x_lim is not None:
+            pyplot.xlim(xmin=x_lim[0])
+            pyplot.xlim(xmax=x_lim[1])
+        if y_lim is not None:
+            pyplot.ylim(ymin=y_lim[0])
+            pyplot.ylim(ymax=y_lim[1])
+
+        for i, dp_cluster in enumerate(dp_mixture_iter):
+            pyplot.text(
+                dp_cluster.mu[x],
+                dp_cluster.mu[y],
+                str(i),
+                va='center',
+                ha='center',
+                color='lime',
+                size=14,
+                bbox=dict(facecolor='black')
+            )
+        pyplot.title('Fitted clusters')
 
         pyplot.show()
