@@ -189,6 +189,50 @@ class DataSet(object):
 
         pyplot.figure(figsize=(8, 8))
 
+        cmap = pyplot.cm.get_cmap('gist_rainbow')
+        cmap_list = [cmap(i) for i in range(cmap.N)]
+        cmap.from_list(np.linspace(0, 1, len(dp_mixture_iter)))
+        cs = [cmap[i] for i in classifications]
+
+        pyplot.scatter(
+            raw_data[:, x],
+            raw_data[:, y],
+            s=8,
+            c=cs,
+            edgecolors='none',
+            alpha=1.0
+        )
+
+        if x_lim is not None:
+            pyplot.xlim(xmin=x_lim[0])
+            pyplot.xlim(xmax=x_lim[1])
+        if y_lim is not None:
+            pyplot.ylim(ymin=y_lim[0])
+            pyplot.ylim(ymax=y_lim[1])
+
+        for i, dp_cluster in enumerate(dp_mixture_iter):
+            pyplot.text(
+                dp_cluster.mu[x],
+                dp_cluster.mu[y],
+                str(i),
+                va='center',
+                ha='center',
+                color='lime',
+                size=14,
+                bbox=dict(facecolor='black')
+            )
+        pyplot.title('Fitted clusters')
+
+        pyplot.show()
+
+    def plot_animated_trace(self, x=0, y=1, x_lim=None, y_lim=None):
+        dp_mixture_iter = self._raw_results.get_iteration(iteration)
+
+        raw_data = np.vstack(self.blobs.values())
+        classifications = dp_mixture_iter.classify(raw_data)
+
+        pyplot.figure(figsize=(8, 8))
+
         _colors = pyplot.cm.rainbow(np.linspace(0, 1, len(dp_mixture_iter)))
         cs = [_colors[i] for i in classifications]
 
