@@ -189,17 +189,16 @@ class DataSet(object):
 
         pyplot.figure(figsize=(8, 8))
 
-        cmap = pyplot.cm.get_cmap('gist_rainbow')
-        cmap_list = [cmap(i) for i in range(cmap.N)]
-        cmap.from_list(np.linspace(0, 1, len(dp_mixture_iter)))
-        cs = [cmap[i] for i in classifications]
+        cmap = pyplot.cm.get_cmap('rainbow')
 
         pyplot.scatter(
             raw_data[:, x],
             raw_data[:, y],
             s=8,
-            c=cs,
+            c=classifications,
             edgecolors='none',
+            cmap=cmap,
+            vmax=len(dp_mixture_iter),
             alpha=1.0
         )
 
