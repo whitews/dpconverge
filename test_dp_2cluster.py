@@ -19,7 +19,7 @@ for i, center in enumerate(centers):
 
     ds.add_blob(i, X)
 
-ds.plot(ds.classifications, x_lim=[0, 6], y_lim=[0, 6])
+ds.plot_blobs(ds.classifications, x_lim=[0, 6], y_lim=[0, 6])
 ds.cluster(
     component_count=4,
     burn_in=2,
