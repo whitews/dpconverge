@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot
+from matplotlib import pyplot, animation
 from itertools import cycle
 from flowstats import cluster
 
@@ -225,22 +225,30 @@ class DataSet(object):
         pyplot.show()
 
     def plot_animated_trace(self, x=0, y=1, x_lim=None, y_lim=None):
-        dp_mixture_iter = self._raw_results.get_iteration(iteration)
+        def update_plot(i):
+            new_iter = self._raw_results.get_iteration(i)
+            new_classifications = new_iter.classify(raw_data)
+            scatter.set_array(new_classifications)
 
+        n_iterations = self._raw_results.niter
         raw_data = np.vstack(self.blobs.values())
+
+        fig = pyplot.figure(figsize=(8, 8))
+
+        cmap = pyplot.cm.get_cmap('rainbow')
+
+        # start with 1st iteration
+        dp_mixture_iter = self._raw_results.get_iteration(0)
         classifications = dp_mixture_iter.classify(raw_data)
 
-        pyplot.figure(figsize=(8, 8))
-
-        _colors = pyplot.cm.rainbow(np.linspace(0, 1, len(dp_mixture_iter)))
-        cs = [_colors[i] for i in classifications]
-
-        pyplot.scatter(
+        scatter = pyplot.scatter(
             raw_data[:, x],
             raw_data[:, y],
             s=8,
-            c=cs,
+            c=classifications,
             edgecolors='none',
+            cmap=cmap,
+            vmax=len(dp_mixture_iter) - 1,
             alpha=1.0
         )
 
@@ -251,17 +259,25 @@ class DataSet(object):
             pyplot.ylim(ymin=y_lim[0])
             pyplot.ylim(ymax=y_lim[1])
 
-        for i, dp_cluster in enumerate(dp_mixture_iter):
-            pyplot.text(
-                dp_cluster.mu[x],
-                dp_cluster.mu[y],
-                str(i),
-                va='center',
-                ha='center',
-                color='lime',
-                size=14,
-                bbox=dict(facecolor='black')
-            )
+        anim = animation.FuncAnimation(
+            fig,
+            update_plot,
+            interval=250,
+            frames=xrange(n_iterations),
+            fargs=()
+        )
+
+        # for i, dp_cluster in enumerate(dp_mixture_iter):
+        #     pyplot.text(
+        #         dp_cluster.mu[x],
+        #         dp_cluster.mu[y],
+        #         str(i),
+        #         va='center',
+        #         ha='center',
+        #         color='lime',
+        #         size=14,
+        #         bbox=dict(facecolor='black')
+        #     )
         pyplot.title('Fitted clusters')
 
         pyplot.show()

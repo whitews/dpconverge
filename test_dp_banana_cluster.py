@@ -30,9 +30,9 @@ ds.cluster(
     random_seed=123
 )
 
-ds.plot_classifications(0)
+ds.plot_animated_trace()
 
-ds.plot_iteration_traces(0)
-ds.plot_iteration_traces(1)
-ds.plot_iteration_traces(2)
-ds.plot_iteration_traces(3)
+# ds.plot_iteration_traces(0)
+# ds.plot_iteration_traces(1)
+# ds.plot_iteration_traces(2)
+# ds.plot_iteration_traces(3)
