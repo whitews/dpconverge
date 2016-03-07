@@ -13,7 +13,7 @@ outer_circ_x = 1.0 + np.cos(np.linspace(0, np.pi, n_samples)) / 2
 outer_circ_y = 0.5 + np.sin(np.linspace(0, np.pi, n_samples))
 
 X = np.vstack((outer_circ_x, outer_circ_y)).T
-
+np.random.seed(1)
 X[:, 0] += (np.random.rand(500) - 0.5) / 16
 X[:, 1] += (np.random.rand(500) - 0.5) / 16
 
