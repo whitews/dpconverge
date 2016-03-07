@@ -3,6 +3,7 @@ import pandas as pd
 from matplotlib import pyplot, animation
 from itertools import cycle
 from flowstats import cluster
+import colormaps
 
 colors = [
     'dodgerblue',
@@ -132,6 +133,7 @@ class DataSet(object):
             component_count,
             iteration_count
         )
+        print self._raw_results.mus[:5]
 
     def plot_iteration_traces(self, component):
         fig = pyplot.figure(figsize=(16, 4 * self._parameter_count))
@@ -226,38 +228,38 @@ class DataSet(object):
 
     def plot_animated_trace(self, x=0, y=1, x_lim=None, y_lim=None):
         def update_plot(i):
-            new_iter = self._raw_results.get_iteration(i)
-            new_classifications = new_iter.classify(raw_data)
-            scatter.set_array(new_classifications)
+            pyplot.title('Iteration: %d' % i)
+            scatter.set_array(classifications[i])
 
         n_iterations = self._raw_results.niter
+        n_clusters = len(self._raw_results.get_iteration(0))
         raw_data = np.vstack(self.blobs.values())
 
+        classifications = []
+        for i in range(n_iterations):
+            new_iter = self._raw_results.get_iteration(i)
+            classifications.append(new_iter.classify(raw_data))
+
         fig = pyplot.figure(figsize=(8, 8))
+        ax = fig.add_subplot(111, axisbg='gray')
 
-        cmap = pyplot.cm.get_cmap('rainbow')
-
-        # start with 1st iteration
-        dp_mixture_iter = self._raw_results.get_iteration(0)
-        classifications = dp_mixture_iter.classify(raw_data)
-
-        scatter = pyplot.scatter(
+        scatter = ax.scatter(
             raw_data[:, x],
             raw_data[:, y],
             s=8,
-            c=classifications,
+            c=classifications[0],  # start with 1st iteration
             edgecolors='none',
-            cmap=cmap,
-            vmax=len(dp_mixture_iter) - 1,
+            cmap=colormaps.viridis,
+            vmax=n_clusters - 1,
             alpha=1.0
         )
 
         if x_lim is not None:
-            pyplot.xlim(xmin=x_lim[0])
-            pyplot.xlim(xmax=x_lim[1])
+            ax.xlim(xmin=x_lim[0])
+            ax.xlim(xmax=x_lim[1])
         if y_lim is not None:
-            pyplot.ylim(ymin=y_lim[0])
-            pyplot.ylim(ymax=y_lim[1])
+            ax.ylim(ymin=y_lim[0])
+            ax.ylim(ymax=y_lim[1])
 
         anim = animation.FuncAnimation(
             fig,
