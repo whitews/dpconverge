@@ -198,7 +198,7 @@ class DataSet(object):
             c=classifications,
             edgecolors='none',
             cmap=cmap,
-            vmax=len(dp_mixture_iter),
+            vmax=len(dp_mixture_iter) - 1,
             alpha=1.0
         )
 
