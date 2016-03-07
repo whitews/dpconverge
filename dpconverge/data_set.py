@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib
 from matplotlib import pyplot, animation
 from itertools import cycle
 from flowstats import cluster
@@ -133,7 +134,6 @@ class DataSet(object):
             component_count,
             iteration_count
         )
-        print self._raw_results.mus[:5]
 
     def plot_iteration_traces(self, component):
         fig = pyplot.figure(figsize=(16, 4 * self._parameter_count))
@@ -246,7 +246,7 @@ class DataSet(object):
         scatter = ax.scatter(
             raw_data[:, x],
             raw_data[:, y],
-            s=8,
+            s=16,
             c=classifications[0],  # start with 1st iteration
             edgecolors='none',
             cmap=colormaps.viridis,
@@ -264,22 +264,11 @@ class DataSet(object):
         anim = animation.FuncAnimation(
             fig,
             update_plot,
-            interval=250,
+            interval=200,
             frames=xrange(n_iterations),
             fargs=()
         )
 
-        # for i, dp_cluster in enumerate(dp_mixture_iter):
-        #     pyplot.text(
-        #         dp_cluster.mu[x],
-        #         dp_cluster.mu[y],
-        #         str(i),
-        #         va='center',
-        #         ha='center',
-        #         color='lime',
-        #         size=14,
-        #         bbox=dict(facecolor='black')
-        #     )
         pyplot.title('Fitted clusters')
 
         pyplot.show()

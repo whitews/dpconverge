@@ -26,7 +26,7 @@ ds.plot_blobs(ds.classifications, x_lim=[0, 6], y_lim=[0, 6])
 ds.cluster(
     component_count=4,
     burn_in=2,
-    iteration_count=50,
+    iteration_count=200,
     random_seed=123
 )
 
