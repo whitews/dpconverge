@@ -135,6 +135,26 @@ class DataSet(object):
             iteration_count
         )
 
+    def add_results(self, dp_mixture):
+        if not isinstance(dp_mixture, cluster.DPMixture):
+            raise TypeError("Data set results must be a 'DPMixture'")
+        elif self._raw_results is not None:
+            raise ValueError("Data set already has clustering results")
+
+        if len(dp_mixture) % dp_mixture.niter != 0:
+            raise ValueError("Failed to parse DPMixture components")
+
+        iteration_count = dp_mixture.niter
+        component_count = len(dp_mixture) / iteration_count
+
+        self._raw_results = dp_mixture
+
+        self.results = self._create_results_dataframe(
+            self._raw_results,
+            component_count,
+            iteration_count
+        )
+
     def plot_iteration_traces(self, component):
         fig = pyplot.figure(figsize=(16, 4 * self._parameter_count))
         subplot_n = 1
