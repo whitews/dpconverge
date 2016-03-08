@@ -1,25 +1,7 @@
 import numpy as np
 import pandas as pd
-import matplotlib
 from matplotlib import pyplot, animation
-from itertools import cycle
 from flowstats import cluster
-import colormaps
-
-colors = [
-    'dodgerblue',
-    'gold',
-    'red',
-    'green',
-    'orange',
-    'purple',
-    'darkolivegreen',
-    'darkblue',
-    'goldenrod',
-    'indianred',
-    'seagreen',
-    'peru'
-]
 
 
 class DataSet(object):
@@ -75,8 +57,6 @@ class DataSet(object):
             pyplot.xlim(xmin=x_lim[0], xmax=x_lim[1])
         if y_lim is not None:
             pyplot.ylim(ymin=y_lim[0], ymax=y_lim[1])
-
-        color_cycle = cycle(colors)
 
         for c in classifications:
             c_array = np.empty(self.blobs[c].shape[0])
@@ -253,10 +233,17 @@ class DataSet(object):
 
         pyplot.show()
 
-    def plot_animated_trace(self, x=0, y=1, x_lim=None, y_lim=None, iter_start=0):
-        def update_plot(i):
-            pyplot.title('Iteration: %d' % i)
-            scatter.set_array(classifications[i - iter_start])
+    def plot_animated_trace(
+            self,
+            x=0,
+            y=1,
+            x_lim=None,
+            y_lim=None,
+            iter_start=0
+    ):
+        def update_plot(frame):
+            pyplot.title('Iteration: %d' % frame)
+            scatter.set_array(classifications[frame - iter_start])
 
         n_iterations = self._raw_results.niter
         n_clusters = len(self._raw_results.get_iteration(0))
