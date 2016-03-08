@@ -59,8 +59,4 @@ class DataCollection(object):
 
         # save results for each DataSet
         for i, ds in enumerate(self.data_sets):
-            ds.results = ds._create_results_dataframe(
-                fitted_results[i],
-                component_count,
-                iteration_count
-            )
+            ds.add_results(fitted_results[i])
