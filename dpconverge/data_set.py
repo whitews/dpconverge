@@ -79,12 +79,19 @@ class DataSet(object):
         color_cycle = cycle(colors)
 
         for c in classifications:
+            c_array = np.empty(self.blobs[c].shape[0])
+            c_array.fill(c)
+
             pyplot.scatter(
                 self.blobs[c][:, x],
                 self.blobs[c][:, y],
-                s=5,
-                c=color_cycle.next(),
-                edgecolors='none'
+                s=4,
+                c=c_array,
+                cmap=pyplot.cm.get_cmap('jet'),
+                vmin=min(self.blobs.keys()),
+                vmax=max(self.blobs.keys()),
+                edgecolors='none',
+                alpha=0.7
             )
 
         pyplot.show()
@@ -246,17 +253,17 @@ class DataSet(object):
 
         pyplot.show()
 
-    def plot_animated_trace(self, x=0, y=1, x_lim=None, y_lim=None):
+    def plot_animated_trace(self, x=0, y=1, x_lim=None, y_lim=None, iter_start=0):
         def update_plot(i):
             pyplot.title('Iteration: %d' % i)
-            scatter.set_array(classifications[i])
+            scatter.set_array(classifications[i - iter_start])
 
         n_iterations = self._raw_results.niter
         n_clusters = len(self._raw_results.get_iteration(0))
         raw_data = np.vstack(self.blobs.values())
 
         classifications = []
-        for i in range(n_iterations):
+        for i in range(iter_start, n_iterations):
             new_iter = self._raw_results.get_iteration(i)
             classifications.append(new_iter.classify(raw_data))
 
@@ -269,7 +276,7 @@ class DataSet(object):
             s=16,
             c=classifications[0],  # start with 1st iteration
             edgecolors='none',
-            cmap=colormaps.viridis,
+            cmap=pyplot.cm.get_cmap('jet'),
             vmax=n_clusters - 1,
             alpha=1.0
         )
@@ -284,8 +291,8 @@ class DataSet(object):
         anim = animation.FuncAnimation(
             fig,
             update_plot,
-            interval=200,
-            frames=xrange(n_iterations),
+            interval=100,
+            frames=xrange(iter_start, n_iterations),
             fargs=()
         )
 
