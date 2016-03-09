@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import skew, kurtosis
 from matplotlib import pyplot, animation
 from flowstats import cluster
 
@@ -34,6 +35,7 @@ class DataSet(object):
         if not isinstance(blob_data, np.ndarray):
             raise TypeError("'blob_data' must be a NumPy 'ndarray'")
 
+        # noinspection PyUnresolvedReferences
         if blob_data.shape[1] != self._parameter_count:
             raise ValueError("blob does not match data set's parameter count")
 
@@ -141,6 +143,71 @@ class DataSet(object):
             component_count,
             iteration_count
         )
+
+    def test_component(self, component_dataframe):
+        """
+        Tests a given component dataframe for convergence, returning
+        True for converged components
+        :param component_dataframe: Pandas dataframe
+        :return: boolean
+        """
+
+        # define our acceptable bounds
+        skew_range = [-0.6, 0.6]
+        kurt_range = [-1.5, 0.5]  # accept shorter tails for bang-on data
+        weight_low = 0.008
+
+        # perform weight test first
+        if component_dataframe.weight.mean() < weight_low:
+            return False
+
+        if skew(component_dataframe.weight) < skew_range[0]:
+            return False
+
+        if skew(component_dataframe.weight) > skew_range[1]:
+            return False
+
+        if kurtosis(component_dataframe.weight) < kurt_range[0]:
+            return False
+
+        if kurtosis(component_dataframe.weight) > kurt_range[1]:
+            return False
+
+        # component_dataframe.weight.std()
+
+        # now for the component parameter locations
+        for param in ['loc'+str(i) for i in range(self._parameter_count)]:
+            if skew(component_dataframe[param]) < skew_range[0]:
+                return False
+
+            if skew(component_dataframe[param]) > skew_range[1]:
+                return False
+
+            if kurtosis(component_dataframe[param]) < kurt_range[0]:
+                return False
+
+            if kurtosis(component_dataframe[param]) > kurt_range[1]:
+                return False
+
+            # component_dataframe[param].std()
+
+        # all tests passed
+        return True
+
+    def get_valid_components(self):
+        if self._raw_results is None:
+            raise ValueError("Data set has no saved results")
+
+        # list of good components to return
+        good_comps = []
+
+        for comp in self.results.component.unique():
+            comp_data = self.results[self.results.component == comp]
+            comp_passed = self.test_component(comp_data)
+            if comp_passed:
+                good_comps.append(comp)
+
+        return good_comps
 
     def plot_iteration_traces(self, component):
         fig = pyplot.figure(figsize=(16, 4 * self._parameter_count))
@@ -278,7 +345,7 @@ class DataSet(object):
         anim = animation.FuncAnimation(
             fig,
             update_plot,
-            interval=100,
+            interval=150,
             frames=xrange(iter_start, n_iterations),
             fargs=()
         )
@@ -286,3 +353,5 @@ class DataSet(object):
         pyplot.title('Fitted clusters')
 
         pyplot.show()
+
+        return anim
