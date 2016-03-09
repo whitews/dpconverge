@@ -209,6 +209,40 @@ class DataSet(object):
 
         return good_comps
 
+    def get_log_likelihood_trace(self):
+        if self._raw_results is None:
+            raise ValueError("Data set has no saved results")
+
+        log_likelihoods = []
+        data = np.vstack(self.blobs.values())
+
+        for i in range(self._raw_results.niter):
+            dp_mixture_iter = self._raw_results.get_iteration(i)
+            log_likelihoods.append(
+                dp_mixture_iter.log_likelihood(data)
+            )
+        return log_likelihoods
+
+    def plot_log_likelihood_trace(self):
+        log_likelihoods = self.get_log_likelihood_trace()
+        n_iterations = self._raw_results.niter
+
+        fig = pyplot.figure(figsize=(16, 4))
+
+        ax = fig.add_subplot(1, 1, 1)
+
+        ax.set_title('Log likelihood trace')
+
+        ax.plot(
+            range(n_iterations),
+            log_likelihoods,
+            'dodgerblue',
+            lw='1.0',
+            alpha=0.8
+        )
+
+        return fig
+
     def plot_iteration_traces(self, component):
         fig = pyplot.figure(figsize=(16, 4 * self._parameter_count))
         subplot_n = 1
