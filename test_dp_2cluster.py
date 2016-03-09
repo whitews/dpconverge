@@ -19,14 +19,27 @@ for i, center in enumerate(centers):
 
     ds.add_blob(i, X)
 
+component_count = 5
+
 ds.plot_blobs(ds.classifications, x_lim=[0, 6], y_lim=[0, 6])
 ds.cluster(
-    component_count=4,
-    burn_in=2,
-    iteration_count=50,
+    component_count=component_count,
+    burn_in=1000,
+    iteration_count=200,
     random_seed=123
 )
-ds.plot_iteration_traces(0)
-ds.plot_iteration_traces(1)
-ds.plot_iteration_traces(2)
-ds.plot_iteration_traces(3)
+
+valid_components = ds.get_valid_components()
+
+print "Recommended component count: ", len(valid_components)
+
+for i in range(component_count):
+    if i in valid_components:
+        ds.plot_iteration_traces(i)
+
+for i in range(component_count):
+    if i not in valid_components:
+        print "Possible invalid Component"
+        ds.plot_iteration_traces(i)
+
+ds.plot_animated_trace()

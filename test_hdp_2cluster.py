@@ -34,5 +34,7 @@ dc.cluster(
     iteration_count=50,
     random_seed=123
 )
+dc.data_sets[0].plot_animated_trace()
+dc.data_sets[1].plot_animated_trace()
 
 dc.data_sets[0].plot_iteration_traces(0)
