@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+from matplotlib import pyplot
 from dpconverge.data_set import DataSet
 
 from sklearn.datasets.samples_generator import make_blobs
@@ -57,16 +59,16 @@ ds.add_blob(5, blob5)
 
 #ds.plot_blobs(ds.classifications, x_lim=[0, 4], y_lim=[0, 4])
 
-component_count = 6
-burn_in = 0
-iteration_count = 50
-
+component_list = range(2, 13)
+burn_in = 100
+iteration_count = 10000
+seeds = range(1, 5)
 save_dir = "~/test_output/"
 
 run_data_frames = []
 
-for comp_count in range(4, component_count+1):
-    for seed in range(1, 3):
+for comp_count in component_list:
+    for seed in seeds:
         ds = DataSet(parameter_count=2)
 
         ds.add_blob(1, blob1)
@@ -109,12 +111,16 @@ for comp_count in range(4, component_count+1):
         # fig.savefig(save_dir + filename)
 
 df = pd.concat(run_data_frames, ignore_index=True)
+df.to_pickle('log_like_data.pkl')
 
-colors = ['blue', 'orange', 'lime']
+cmap = pyplot.cm.get_cmap('jet')
+colors = [cmap(i) for i in np.linspace(0, 1, len(component_list))]
 
-for comp_count in range(4, component_count+1):
-    color = colors[comp_count-4]
-    for seed in range(1, 3):
+fig = pyplot.figure(figsize=(8, 8))
+
+for i, comp_count in enumerate(component_list):
+    color = colors[i]
+    for seed in seeds:
 
         df[(df.comp == comp_count) & (df.seed == seed)].plot(
             x='iter',
@@ -122,17 +128,4 @@ for comp_count in range(4, component_count+1):
             c=color
         )
 
-exit()
-
-valid_components = ds.get_valid_components()
-
-print "Recommended component count: ", len(valid_components)
-
-for i in range(component_count):
-    if i in valid_components:
-        ds.plot_iteration_traces(i)
-
-for i in range(component_count):
-    if i not in valid_components:
-        print "Possible invalid Component"
-        ds.plot_iteration_traces(i)
+pyplot.show()
