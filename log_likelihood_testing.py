@@ -58,8 +58,8 @@ ds.add_blob(5, blob5)
 #ds.plot_blobs(ds.classifications, x_lim=[0, 4], y_lim=[0, 4])
 
 component_count = 6
-burn_in = 10
-iteration_count = 500
+burn_in = 0
+iteration_count = 50
 
 save_dir = "~/test_output/"
 
@@ -91,7 +91,6 @@ for comp_count in range(4, component_count+1):
                 {
                     'comp': comp_count,
                     'seed': seed,
-                    'burn': burn_in,
                     'iter': range(iteration_count),
                     'likelihood': log_likelihoods
                 }
@@ -109,7 +108,19 @@ for comp_count in range(4, component_count+1):
         #
         # fig.savefig(save_dir + filename)
 
-df = pd.concat(run_data_frames)
+df = pd.concat(run_data_frames, ignore_index=True)
+
+colors = ['blue', 'orange', 'lime']
+
+for comp_count in range(4, component_count+1):
+    color = colors[comp_count-4]
+    for seed in range(1, 3):
+
+        df[(df.comp == comp_count) & (df.seed == seed)].plot(
+            x='iter',
+            y='likelihood',
+            c=color
+        )
 
 exit()
 
