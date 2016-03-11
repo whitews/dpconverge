@@ -14,13 +14,12 @@ alphas = np.linspace(1, 0.4, len(component_list))
 fig = pyplot.figure(figsize=(8, 8))
 
 for i, comp_count in enumerate(component_list):
-    color = colors[i]
     for seed in seeds:
 
         df[(df.comp == comp_count) & (df.seed == seed)].plot(
             x='iter',
             y='likelihood',
-            c=color,
+            c=colors[i],
             linewidth=1,
             alpha=alphas[i]
         )
