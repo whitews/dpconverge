@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import multivariate_normal
 import pandas as pd
 from scipy.stats import skew, kurtosis
 from matplotlib import pyplot, animation
@@ -209,7 +210,23 @@ class DataSet(object):
 
         return good_comps
 
-    def get_log_likelihood_trace(self):
+    def _get_scipy_log_likelihood(self, dp_mixture, data):
+        log_likelihood = np.sum(
+            np.log(
+                sum(
+                    pi * multivariate_normal.pdf(data, mu, sigma)
+                    for (pi, mu, sigma) in zip(
+                        dp_mixture.pis,
+                        dp_mixture.mus,
+                        dp_mixture.sigmas
+                    )
+                )
+            )
+        )
+
+        return log_likelihood
+
+    def get_log_likelihood_trace(self, use_scipy=False):
         if self._raw_results is None:
             raise ValueError("Data set has no saved results")
 
@@ -218,13 +235,22 @@ class DataSet(object):
 
         for i in range(self._raw_results.niter):
             dp_mixture_iter = self._raw_results.get_iteration(i)
-            log_likelihoods.append(
-                dp_mixture_iter.log_likelihood(data)
-            )
+
+            if use_scipy:
+                log_likelihoods.append(
+                    self._get_scipy_log_likelihood(
+                        dp_mixture_iter,
+                        data
+                    )
+                )
+            else:
+                log_likelihoods.append(
+                    dp_mixture_iter.log_likelihood(data)
+                )
         return log_likelihoods
 
-    def plot_log_likelihood_trace(self):
-        log_likelihoods = self.get_log_likelihood_trace()
+    def plot_log_likelihood_trace(self, use_scipy=False):
+        log_likelihoods = self.get_log_likelihood_trace(use_scipy=use_scipy)
         n_iterations = self._raw_results.niter
 
         fig = pyplot.figure(figsize=(16, 4))
