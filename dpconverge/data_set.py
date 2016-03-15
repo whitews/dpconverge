@@ -211,6 +211,21 @@ class DataSet(object):
         return good_comps
 
     @staticmethod
+    def _get_likelihood(dp_mixture, data):
+        likelihood = np.sum(
+            [
+                sum(pi * multivariate_normal.pdf(data, mu, sigma))
+                for (pi, mu, sigma) in zip(
+                    dp_mixture.pis,
+                    dp_mixture.mus,
+                    dp_mixture.sigmas
+                )
+            ]
+        )
+
+        return likelihood
+
+    @staticmethod
     def _get_scipy_log_likelihood(dp_mixture, data):
         log_likelihood = np.sum(
             np.log(
@@ -250,6 +265,25 @@ class DataSet(object):
                 )
         return log_likelihoods
 
+    def get_likelihood_trace(self):
+        if self._raw_results is None:
+            raise ValueError("Data set has no saved results")
+
+        likelihoods = []
+        data = np.vstack(self.blobs.values())
+
+        for i in range(self._raw_results.niter):
+            dp_mixture_iter = self._raw_results.get_iteration(i)
+
+            likelihoods.append(
+                self._get_likelihood(
+                    dp_mixture_iter,
+                    data
+                )
+            )
+
+        return likelihoods
+
     def plot_log_likelihood_trace(self, use_scipy=False):
         log_likelihoods = self.get_log_likelihood_trace(use_scipy=use_scipy)
         n_iterations = self._raw_results.niter
@@ -263,6 +297,26 @@ class DataSet(object):
         ax.plot(
             range(n_iterations),
             log_likelihoods,
+            'dodgerblue',
+            lw='1.0',
+            alpha=0.8
+        )
+
+        return fig
+
+    def plot_likelihood_trace(self):
+        likelihoods = self.get_likelihood_trace()
+        n_iterations = self._raw_results.niter
+
+        fig = pyplot.figure(figsize=(16, 4))
+
+        ax = fig.add_subplot(1, 1, 1)
+
+        ax.set_title('Log likelihood trace')
+
+        ax.plot(
+            range(n_iterations),
+            likelihoods,
             'dodgerblue',
             lw='1.0',
             alpha=0.8
