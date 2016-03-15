@@ -60,9 +60,9 @@ component_count = 5
 
 ds.cluster(
     component_count=component_count,
-    burn_in=1000,
+    burn_in=10,
     iteration_count=1000,
-    random_seed=1
+    random_seed=2
 )
 
 valid_components = ds.get_valid_components()
@@ -78,7 +78,8 @@ for i in range(component_count):
         print "Possible invalid Component"
         ds.plot_iteration_traces(i)
 
-ds.plot_animated_trace()
+ds.plot_animated_trace(iter_start=800)
 ds.plot_log_likelihood_trace(use_scipy=False)
 ds.plot_log_likelihood_trace(use_scipy=True)
+ds.plot_likelihood_trace()
 pyplot.show()
