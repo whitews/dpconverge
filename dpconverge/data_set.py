@@ -210,7 +210,8 @@ class DataSet(object):
 
         return good_comps
 
-    def _get_scipy_log_likelihood(self, dp_mixture, data):
+    @staticmethod
+    def _get_scipy_log_likelihood(dp_mixture, data):
         log_likelihood = np.sum(
             np.log(
                 sum(
