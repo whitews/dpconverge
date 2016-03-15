@@ -43,7 +43,7 @@ blob5, y5 = make_blobs(
     n_features=1,
     centers=centers[4],
     cluster_std=[0.1, 0.1],
-    random_state=2
+    random_state=3
 )
 
 ds = DataSet(parameter_count=2)
@@ -69,15 +69,16 @@ valid_components = ds.get_valid_components()
 
 print "Recommended component count: ", len(valid_components)
 
-# for i in range(component_count):
-#     if i in valid_components:
-#         ds.plot_iteration_traces(i)
-#
-# for i in range(component_count):
-#     if i not in valid_components:
-#         print "Possible invalid Component"
-#         ds.plot_iteration_traces(i)
+for i in range(component_count):
+    if i in valid_components:
+        ds.plot_iteration_traces(i)
 
-# ds.plot_animated_trace()
+for i in range(component_count):
+    if i not in valid_components:
+        print "Possible invalid Component"
+        ds.plot_iteration_traces(i)
+
+ds.plot_animated_trace()
+ds.plot_log_likelihood_trace(use_scipy=False)
 ds.plot_log_likelihood_trace(use_scipy=True)
 pyplot.show()
