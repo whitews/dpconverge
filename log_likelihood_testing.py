@@ -46,7 +46,7 @@ blob5, y5 = make_blobs(
     n_features=1,
     centers=centers[4],
     cluster_std=[0.1, 0.1],
-    random_state=2
+    random_state=3
 )
 
 ds = DataSet(parameter_count=2)
@@ -57,10 +57,10 @@ ds.add_blob(3, blob3)
 ds.add_blob(4, blob4)
 ds.add_blob(5, blob5)
 
-component_list = range(3, 8)
-burn_in = 0
-iteration_count = 2000
-seeds = range(1, 9)
+component_list = range(4, 8)
+burn_in = 50
+iteration_count = 5000
+seeds = range(1, 5)
 
 run_data_frames = []
 
@@ -112,3 +112,5 @@ df = pd.concat(run_data_frames, ignore_index=True)
 df.to_pickle('log_like_data.pkl')
 
 pyplot.show()
+
+pass
