@@ -380,7 +380,7 @@ class DataSet(object):
 
         pyplot.figure(figsize=(8, 8))
 
-        cmap = pyplot.cm.get_cmap('rainbow')
+        cmap = pyplot.cm.get_cmap('jet')
 
         pyplot.scatter(
             raw_data[:, x],
@@ -411,7 +411,7 @@ class DataSet(object):
                 size=14,
                 bbox=dict(facecolor='black')
             )
-        pyplot.title('Fitted clusters')
+        pyplot.title('Iteration %d' % iteration)
 
         pyplot.show()
 
