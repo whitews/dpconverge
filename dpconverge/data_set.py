@@ -372,11 +372,17 @@ class DataSet(object):
 
         pyplot.show()
 
-    def plot_classifications(self, iteration, x=0, y=1, x_lim=None, y_lim=None):
+    def get_classifications(self, iteration):
         dp_mixture_iter = self._raw_results.get_iteration(iteration)
 
         raw_data = np.vstack(self.blobs.values())
         classifications = dp_mixture_iter.classify(raw_data)
+
+        return classifications
+
+    def plot_classifications(self, iteration, x=0, y=1, x_lim=None, y_lim=None):
+
+        classifications = self.get_classifications(iteration)
 
         pyplot.figure(figsize=(8, 8))
 
