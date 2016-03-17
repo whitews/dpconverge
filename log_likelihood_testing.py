@@ -57,10 +57,10 @@ ds.add_blob(3, blob3)
 ds.add_blob(4, blob4)
 ds.add_blob(5, blob5)
 
-component_list = range(4, 8)
-burn_in = 50
-iteration_count = 5000
-seeds = range(1, 5)
+component_list = range(4, 65, 4)
+burn_in = 2
+iteration_count = 30
+seeds = range(1, 9)
 
 run_data_frames = []
 
@@ -72,6 +72,8 @@ fig = pyplot.figure(figsize=(8, 8))
 
 for i, comp_count in enumerate(component_list):
     for seed in seeds:
+        print "Comp: %d, Seed: %d" % (comp_count, seed)
+
         ds = DataSet(parameter_count=2)
 
         ds.add_blob(1, blob1)
@@ -102,8 +104,8 @@ for i, comp_count in enumerate(component_list):
             x='iter',
             y='likelihood',
             c=colors[i],
-            linewidth=1,
-            alpha=alphas[i]
+            linewidth=3,
+            alpha=0.4
         )
 
         run_data_frames.append(comp_df)
