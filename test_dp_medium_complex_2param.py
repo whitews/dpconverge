@@ -54,7 +54,7 @@ ds.add_blob(3, blob3)
 ds.add_blob(4, blob4)
 ds.add_blob(5, blob5)
 
-# ds.plot_blobs(ds.classifications, x_lim=[0, 4], y_lim=[0, 4])
+ds.plot_blobs(ds.classifications, x_lim=[0, 4], y_lim=[0, 4])
 
 component_count = 5
 
@@ -78,8 +78,6 @@ for i in range(component_count):
         print "Possible invalid Component"
         ds.plot_iteration_traces(i)
 
-ds.plot_animated_trace(iter_start=800)
-ds.plot_log_likelihood_trace(use_scipy=False)
-ds.plot_log_likelihood_trace(use_scipy=True)
-ds.plot_likelihood_trace()
+ds.plot_animated_trace(iter_start=1800)
+ds.plot_log_likelihood_trace()
 pyplot.show()
