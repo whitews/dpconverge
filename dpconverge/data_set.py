@@ -168,7 +168,7 @@ class DataSet(object):
 
         # define our acceptable bounds
         skew_range = [-0.6, 0.6]
-        kurt_range = [-1.5, 0.5]  # accept shorter tails for bang-on data
+        kurt_range = [-1.5, 0.75]  # accept shorter tails for bang-on data
         weight_low = 0.008
 
         # perform weight test first
@@ -395,11 +395,9 @@ class DataSet(object):
         )
 
         if x_lim is not None:
-            ax.xlim(xmin=x_lim[0])
-            ax.xlim(xmax=x_lim[1])
+            ax.set_xlim(x_lim[0], x_lim[1])
         if y_lim is not None:
-            ax.ylim(ymin=y_lim[0])
-            ax.ylim(ymax=y_lim[1])
+            ax.set_ylim(y_lim[0], y_lim[1])
 
         anim = animation.FuncAnimation(
             fig,
