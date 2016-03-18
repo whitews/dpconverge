@@ -56,13 +56,14 @@ ds.add_blob(5, blob5)
 
 ds.plot_blobs(ds.classifications, x_lim=[0, 4], y_lim=[0, 4])
 
-component_count = 5
+component_count = 16
+iteration_count = 100
 
 ds.cluster(
     component_count=component_count,
-    burn_in=10,
-    iteration_count=1000,
-    random_seed=2
+    burn_in=0,
+    iteration_count=iteration_count,
+    random_seed=1
 )
 
 valid_components = ds.get_valid_components()
@@ -78,6 +79,6 @@ for i in range(component_count):
         print "Possible invalid Component"
         ds.plot_iteration_traces(i)
 
-ds.plot_animated_trace(iter_start=1800)
+ds.plot_animated_trace()
 ds.plot_log_likelihood_trace()
 pyplot.show()
