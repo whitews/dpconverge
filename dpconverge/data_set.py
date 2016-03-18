@@ -99,7 +99,14 @@ class DataSet(object):
 
         return pd.DataFrame(component_dicts)
 
-    def cluster(self, component_count, burn_in, iteration_count, random_seed):
+    def cluster(
+            self,
+            component_count,
+            burn_in,
+            iteration_count,
+            random_seed,
+            initial_conditions=None
+    ):
         if self.results is not None:
             raise ValueError("Data set already has clustering results")
 
@@ -109,6 +116,13 @@ class DataSet(object):
             burn_in,
             model='dp'
         )
+
+        if initial_conditions is not None:
+            # should check keys of initial values, the
+            # shapes & values should be taken care of in FlowStats
+            model.load_pi(initial_conditions['pis'])
+            model.load_mu(initial_conditions['mus'])
+            model.load_sigma(initial_conditions['sigmas'])
 
         self._raw_results = model.fit(
             np.vstack(self.blobs.values()),
