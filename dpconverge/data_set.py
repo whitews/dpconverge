@@ -105,7 +105,8 @@ class DataSet(object):
             burn_in,
             iteration_count,
             random_seed,
-            initial_conditions=None
+            initial_conditions=None,
+            model='dp'
     ):
         if self.results is not None:
             raise ValueError("Data set already has clustering results")
@@ -114,7 +115,7 @@ class DataSet(object):
             component_count,
             iteration_count,
             burn_in,
-            model='dp'
+            model=model
         )
 
         if initial_conditions is not None:
@@ -135,7 +136,7 @@ class DataSet(object):
         self.results = self._create_results_dataframe(
             self._raw_results,
             component_count,
-            iteration_count
+            self._raw_results.niter
         )
 
     def add_results(self, dp_mixture):
