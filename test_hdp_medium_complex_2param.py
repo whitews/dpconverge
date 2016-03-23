@@ -44,7 +44,7 @@ ds1_blob5, y5 = make_blobs(
     n_features=1,
     centers=centers[4],
     cluster_std=[0.1, 0.1],
-    random_state=2
+    random_state=3
 )
 
 ds = DataSet(parameter_count=2)
@@ -60,7 +60,7 @@ ds.plot_blobs(ds.classifications, x_lim=[0, 4], y_lim=[0, 4])
 dc.add_data_set(ds)
 
 # begin creating blobs for 2nd data set
-ds2_blob1, y1 = make_blobs(
+ds2_blob1, y6 = make_blobs(
     n_samples=1000,
     n_features=1,
     centers=centers[0],
@@ -68,7 +68,7 @@ ds2_blob1, y1 = make_blobs(
     random_state=4
 )
 
-ds2_blob2, y2 = make_blobs(
+ds2_blob2, y7 = make_blobs(
     n_samples=6000,
     n_features=1,
     centers=centers[1],
@@ -76,7 +76,7 @@ ds2_blob2, y2 = make_blobs(
     random_state=4
 )
 
-ds2_blob3, y3 = make_blobs(
+ds2_blob3, y8 = make_blobs(
     n_samples=3000,
     n_features=1,
     centers=centers[2],
@@ -84,7 +84,7 @@ ds2_blob3, y3 = make_blobs(
     random_state=4
 )
 
-ds2_blob4, y4 = make_blobs(
+ds2_blob4, y9 = make_blobs(
     n_samples=250,
     n_features=1,
     centers=centers[3],
@@ -92,12 +92,12 @@ ds2_blob4, y4 = make_blobs(
     random_state=4
 )
 
-ds2_blob5, y5 = make_blobs(
+ds2_blob5, y10 = make_blobs(
     n_samples=250,
     n_features=1,
     centers=centers[4],
     cluster_std=[0.1, 0.1],
-    random_state=4
+    random_state=5
 )
 
 ds = DataSet(parameter_count=2)
@@ -112,12 +112,12 @@ ds.plot_blobs(ds.classifications, x_lim=[0, 4], y_lim=[0, 4])
 
 dc.add_data_set(ds)
 
-component_count = 6
+component_count = 7
 
 dc.cluster(
     component_count=component_count,
     burn_in=1000,
-    iteration_count=2000,
+    iteration_count=200,
     random_seed=1
 )
 
