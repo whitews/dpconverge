@@ -29,7 +29,14 @@ class DataCollection(object):
         else:
             self.data_sets.append(data_set)
 
-    def cluster(self, component_count, burn_in, iteration_count, random_seed):
+    def cluster(
+            self,
+            component_count,
+            burn_in,
+            iteration_count,
+            random_seed,
+            initial_conditions=None
+    ):
         # local 'data_sets' holds the raw data values for each DataSet
         data_sets = list()
 
@@ -48,6 +55,13 @@ class DataCollection(object):
             iteration_count,
             burn_in
         )
+
+        if initial_conditions is not None:
+            # should check keys of initial values, the
+            # shapes & values should be taken care of in FlowStats
+            model.load_pi(initial_conditions['pis'])
+            model.load_mu(initial_conditions['mus'])
+            model.load_sigma(initial_conditions['sigmas'])
 
         fitted_results = model.fit(
             data_sets,
