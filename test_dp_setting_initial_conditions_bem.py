@@ -58,7 +58,7 @@ ds.add_blob(5, blob5)
 
 # ds.plot_blobs(ds.classifications, x_lim=[0, 4], y_lim=[0, 4])
 
-component_count = 5
+component_count = 128
 iteration_count = 5000
 
 # use multiple runs of BEM to estimate the number of components
@@ -74,7 +74,7 @@ while not converged:
 
     new_comp_counts = []
 
-    for seed in range(1, 9):
+    for seed in range(1, 17):
         ds.results = None  # reset results
 
         ds.cluster(
