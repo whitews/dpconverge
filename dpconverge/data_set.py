@@ -400,7 +400,7 @@ class DataSet(object):
         if y_lim is not None:
             ax.set_ylim(y_lim[0], y_lim[1])
 
-        anim = animation.FuncAnimation(
+        animated_plot = animation.FuncAnimation(
             fig,
             update_plot,
             interval=150,
@@ -412,4 +412,4 @@ class DataSet(object):
 
         pyplot.show()
 
-        return anim
+        return animated_plot
