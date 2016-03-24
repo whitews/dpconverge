@@ -21,16 +21,16 @@ class DataSet(object):
         self.results = None
 
     @property
-    def classifications(self):
+    def labels(self):
         return self.blobs.keys()
 
     @property
     def parameter_count(self):
         return self._parameter_count
 
-    def add_blob(self, classification, blob_data):
-        if not isinstance(classification, int):
-            raise TypeError("'classification' must be an integer")
+    def add_blob(self, label, blob_data):
+        if not isinstance(label, int):
+            raise TypeError("'label' must be an integer")
 
         if not isinstance(blob_data, np.ndarray):
             raise TypeError("'blob_data' must be a NumPy 'ndarray'")
@@ -39,14 +39,14 @@ class DataSet(object):
         if blob_data.shape[1] != self._parameter_count:
             raise ValueError("blob does not match data set's parameter count")
 
-        if classification in self.blobs.keys():
-            raise ValueError("This classification is already in use")
+        if label in self.blobs.keys():
+            raise ValueError("This label is already in use")
         else:
-            self.blobs[classification] = blob_data
+            self.blobs[label] = blob_data
 
     def plot_blobs(
             self,
-            classifications,
+            labels,
             x=0,
             y=1,
             figure_size=(8, 8),
@@ -60,15 +60,15 @@ class DataSet(object):
         if y_lim is not None:
             pyplot.ylim(ymin=y_lim[0], ymax=y_lim[1])
 
-        for c in classifications:
-            c_array = np.empty(self.blobs[c].shape[0])
-            c_array.fill(c)
+        for label in labels:
+            label_array = np.empty(self.blobs[label].shape[0])
+            label_array.fill(label)
 
             pyplot.scatter(
-                self.blobs[c][:, x],
-                self.blobs[c][:, y],
+                self.blobs[label][:, x],
+                self.blobs[label][:, y],
                 s=4,
-                c=c_array,
+                c=label_array,
                 cmap=pyplot.cm.get_cmap('jet'),
                 vmin=min(self.blobs.keys()),
                 vmax=max(self.blobs.keys()),
