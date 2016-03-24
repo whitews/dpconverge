@@ -59,16 +59,19 @@ class DataCollection(object):
         if initial_conditions is not None:
             # should check keys of initial values, the
             # shapes & values should be taken care of in FlowStats
-            model.load_pi(initial_conditions['pis'])
+            initial_weights = initial_conditions['pis']
             model.load_mu(initial_conditions['mus'])
             model.load_sigma(initial_conditions['sigmas'])
+        else:
+            initial_weights = None
 
         fitted_results = model.fit(
             data_sets,
             True,
             seed=random_seed,
-            munkres_id=True,
-            verbose=True
+            munkres_id=False,
+            verbose=True,
+            initial_weights=initial_weights
         )
 
         # save results for each DataSet
