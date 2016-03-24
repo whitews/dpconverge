@@ -308,10 +308,10 @@ class DataSet(object):
 
         pyplot.show()
 
-    def get_classifications(self, iteration):
+    def get_classifications(self, iteration, labels):
         dp_mixture_iter = self._raw_results.get_iteration(iteration)
 
-        raw_data = np.vstack(self.blobs.values())
+        raw_data = np.vstack([self.blobs[label] for label in labels])
         classifications = dp_mixture_iter.classify(raw_data)
 
         return classifications
