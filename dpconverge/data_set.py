@@ -14,7 +14,6 @@ class DataSet(object):
             raise TypeError("'parameter_count' must be an integer")
 
         self._parameter_count = parameter_count
-        self._data = np.empty([0, parameter_count])
         self.blobs = {}
         self.length = None
         self._raw_results = None  # holds DPMixture object
