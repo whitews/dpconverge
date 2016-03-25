@@ -16,7 +16,7 @@ class DataSet(object):
         self._parameter_count = parameter_count
         self.blobs = {}
         self.length = None
-        self._raw_results = None  # holds DPMixture object
+        self.raw_results = None  # holds DPMixture object
         self.results = None
 
     @property
@@ -124,7 +124,7 @@ class DataSet(object):
             model.load_mu(initial_conditions['mus'])
             model.load_sigma(initial_conditions['sigmas'])
 
-        self._raw_results = model.fit(
+        self.raw_results = model.fit(
             np.vstack(self.blobs.values()),
             True,
             seed=random_seed,
@@ -133,15 +133,15 @@ class DataSet(object):
         )
 
         self.results = self._create_results_dataframe(
-            self._raw_results,
+            self.raw_results,
             component_count,
-            self._raw_results.niter
+            self.raw_results.niter
         )
 
     def add_results(self, dp_mixture):
         if not isinstance(dp_mixture, cluster.DPMixture):
             raise TypeError("Data set results must be a 'DPMixture'")
-        elif self._raw_results is not None:
+        elif self.raw_results is not None:
             raise ValueError("Data set already has clustering results")
 
         if len(dp_mixture) % dp_mixture.niter != 0:
@@ -150,10 +150,10 @@ class DataSet(object):
         iteration_count = dp_mixture.niter
         component_count = len(dp_mixture) / iteration_count
 
-        self._raw_results = dp_mixture
+        self.raw_results = dp_mixture
 
         self.results = self._create_results_dataframe(
-            self._raw_results,
+            self.raw_results,
             component_count,
             iteration_count
         )
@@ -209,7 +209,7 @@ class DataSet(object):
         return True
 
     def get_valid_components(self):
-        if self._raw_results is None:
+        if self.raw_results is None:
             raise ValueError("Data set has no saved results")
 
         # list of good components to return
@@ -224,14 +224,14 @@ class DataSet(object):
         return good_comps
 
     def get_log_likelihood_trace(self):
-        if self._raw_results is None:
+        if self.raw_results is None:
             raise ValueError("Data set has no saved results")
 
         log_likelihoods = []
         data = np.vstack(self.blobs.values())
 
-        for i in range(self._raw_results.niter):
-            dp_mixture_iter = self._raw_results.get_iteration(i)
+        for i in range(self.raw_results.niter):
+            dp_mixture_iter = self.raw_results.get_iteration(i)
 
             log_likelihoods.append(
                 dp_mixture_iter.log_likelihood(data)
@@ -241,7 +241,7 @@ class DataSet(object):
 
     def plot_log_likelihood_trace(self):
         log_likelihoods = self.get_log_likelihood_trace()
-        n_iterations = self._raw_results.niter
+        n_iterations = self.raw_results.niter
 
         fig = pyplot.figure(figsize=(16, 4))
 
@@ -308,7 +308,7 @@ class DataSet(object):
         pyplot.show()
 
     def get_classifications(self, iteration, labels):
-        dp_mixture_iter = self._raw_results.get_iteration(iteration)
+        dp_mixture_iter = self.raw_results.get_iteration(iteration)
 
         raw_data = np.vstack([self.blobs[label] for label in labels])
         classifications = dp_mixture_iter.classify(raw_data)
@@ -317,7 +317,7 @@ class DataSet(object):
 
     def plot_classifications(self, iteration, x=0, y=1, x_lim=None, y_lim=None):
 
-        dp_mixture_iter = self._raw_results.get_iteration(iteration)
+        dp_mixture_iter = self.raw_results.get_iteration(iteration)
 
         raw_data = np.vstack(self.blobs.values())
         classifications = dp_mixture_iter.classify(raw_data)
@@ -371,13 +371,13 @@ class DataSet(object):
             pyplot.title('Iteration: %d' % frame)
             scatter.set_array(classifications[frame - iter_start])
 
-        n_iterations = self._raw_results.niter
-        n_clusters = len(self._raw_results.get_iteration(0))
+        n_iterations = self.raw_results.niter
+        n_clusters = len(self.raw_results.get_iteration(0))
         raw_data = np.vstack(self.blobs.values())
 
         classifications = []
         for i in range(iter_start, n_iterations):
-            new_iter = self._raw_results.get_iteration(i)
+            new_iter = self.raw_results.get_iteration(i)
             classifications.append(new_iter.classify(raw_data))
 
         fig = pyplot.figure(figsize=(8, 8))
