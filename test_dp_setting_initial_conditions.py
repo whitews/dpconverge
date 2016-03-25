@@ -85,7 +85,7 @@ ds.plot_log_likelihood_trace()
 pyplot.show()
 
 # Re-run a chain using the initial conditions from the last iteration
-last_iter = ds._raw_results.get_iteration(iteration_count - 1)
+last_iter = ds.raw_results.get_iteration(iteration_count - 1)
 
 initial_conditions = {
     'pis': last_iter.pis,
@@ -112,7 +112,7 @@ pyplot.show()
 
 valid_components = ds.get_valid_components()
 
-last_iter = ds._raw_results.get_iteration(iteration_count - 1)
+last_iter = ds.raw_results.get_iteration(iteration_count - 1)
 
 # get new initial conditions from the valid components,
 # but the pis need to be re-scaled to sum to 1

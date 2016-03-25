@@ -86,7 +86,7 @@ for seed in [1, 2]:
     ds.plot_classifications(iteration_count - 1)
 
     last_iterations.append(
-        ds._raw_results.get_iteration(iteration_count - 1)
+        ds.raw_results.get_iteration(iteration_count - 1)
     )
 
 # get reference from 1st run

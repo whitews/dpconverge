@@ -94,7 +94,7 @@ while not converged:
         # if the new log_like is close to the max (within 1%),
         # see if there are any empty components (pi < 0.0001)
         if abs(max_log_like - log_like) < abs(max_log_like * 0.01):
-            tmp_comp_count = np.sum(ds._raw_results.pis > 0.0001)
+            tmp_comp_count = np.sum(ds.raw_results.pis > 0.0001)
             new_comp_counts.append(tmp_comp_count)
 
             # save good run to our results
@@ -104,9 +104,9 @@ while not converged:
                     'true_comp': tmp_comp_count,
                     'seed': seed,
                     'log_like': log_like,
-                    'pis': ds._raw_results.pis,
-                    'mus': ds._raw_results.mus,
-                    'sigmas': ds._raw_results.sigmas
+                    'pis': ds.raw_results.pis,
+                    'mus': ds.raw_results.mus,
+                    'sigmas': ds.raw_results.sigmas
                 }
             )
 
@@ -146,7 +146,7 @@ print log_like
 ds.plot_classifications(0)
 
 # Re-run a chain using the initial conditions from the last iteration
-last_iter = ds._raw_results.get_iteration(0)
+last_iter = ds.raw_results.get_iteration(0)
 
 initial_conditions = {
     'pis': last_iter.pis.flatten(),
