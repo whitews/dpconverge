@@ -129,7 +129,7 @@ class DataSet(object):
             np.vstack(self.blobs.values()),
             True,
             seed=random_seed,
-            munkres_id=True,
+            munkres_id=False,
             verbose=True
         )
 
