@@ -5,7 +5,15 @@ import pandas as pd
 from sklearn.datasets.samples_generator import make_blobs
 
 
-centers = [[2, 1.35], [2, 2], [2, 3], [2.5, 1.5], [2.5, 2], [2.5, 2.5]]
+centers = [
+    [2, 1.35],
+    [2, 2],
+    [2, 3],
+    [2.5, 1.5],
+    [2.5, 2],
+    [2.5, 2.5],
+    [1, 1]
+]
 
 blob1, y1 = make_blobs(
     n_samples=1000,
@@ -85,7 +93,7 @@ ds2_blob3, y8 = make_blobs(
 ds2_blob4, y9 = make_blobs(
     n_samples=250,
     n_features=1,
-    centers=centers[3],
+    centers=centers[5],
     cluster_std=[0.1, 0.1],
     random_state=4
 )
@@ -98,6 +106,15 @@ ds2_blob5, y10 = make_blobs(
     random_state=5
 )
 
+# rare blob
+ds2_blob6, y11 = make_blobs(
+    n_samples=4,
+    n_features=1,
+    centers=centers[6],
+    cluster_std=[0.05, 0.05],
+    random_state=5
+)
+
 ds2 = DataSet(parameter_count=2)
 
 ds2.add_blob(1, ds2_blob1)
@@ -105,6 +122,7 @@ ds2.add_blob(2, ds2_blob2)
 ds2.add_blob(3, ds2_blob3)
 ds2.add_blob(4, ds2_blob4)
 ds2.add_blob(5, ds2_blob5)
+ds2.add_blob(6, ds2_blob6)
 
 ds2.plot_blobs(ds2.labels, x_lim=[0, 4], y_lim=[0, 4])
 
@@ -115,11 +133,11 @@ prelim_ds.add_blob(2, np.vstack(ds2.blobs.values()))
 
 prelim_ds.plot_blobs(prelim_ds.labels, x_lim=[0, 4], y_lim=[0, 4])
 
-# now run bem on 1st data set to get initial conditions
+# now run bem on the combined data set to get initial conditions
 max_log_like = None  # the highest value for all runs
 converged = False
-component_count = 6
-iteration_count = 1000
+component_count = 10
+iteration_count = 5000
 
 results = []  # will be a list of dicts to convert to a DataFrame
 
@@ -128,7 +146,7 @@ while not converged:
 
     new_comp_counts = []
 
-    for seed in range(1, 9):
+    for seed in range(1, 13):
         prelim_ds.results = None  # reset results
 
         prelim_ds.cluster(
@@ -205,7 +223,7 @@ for label in sorted(prelim_ds.labels):
 
     ds_pis = []
 
-    for c in sorted(np.unique(label_classes)):
+    for c in range(best_run['comp']):
         ds_pis.append(np.sum(label_classes == c) / float(len(label_classes)))
 
     pis.append(ds_pis)  # list of lists
@@ -228,61 +246,6 @@ initial_conditions = {
 dc = DataCollection()
 dc.add_data_set(ds)
 dc.add_data_set(ds2)
-
-# # best initial conditions determined previously
-# initial_conditions = {
-#     'pis': np.array(
-#         [
-#             [
-#                 0.09705467,
-#                 0.02443813,
-#                 0.02515411,
-#                 0.28562875,
-#                 0.56772434
-#             ],
-#             [
-#                 0.09705467,
-#                 0.02443813,
-#                 0.02515411,
-#                 0.28562875,
-#                 0.56772434
-#             ],
-#         ]
-#     ),
-#     'mus': np.array(
-#         [
-#             [2.00527002, 1.35488267],
-#             [2.49589273, 2.00544444],
-#             [2.49914699, 1.50246998],
-#             [2.00215572, 2.99699475],
-#             [1.99747818, 2.00077871]
-#         ]
-#     ),
-#     'sigmas': np.array(
-#         [
-#             [
-#                 [0.00999859, -0.00043552],
-#                 [-0.00043552, 0.02284242]
-#             ],
-#             [
-#                 [0.0108694, -0.0001163],
-#                 [-0.0001163, 0.01321305]
-#             ],
-#             [
-#                 [0.01093973, -0.00076813],
-#                 [-0.00076813, 0.01154952]
-#             ],
-#             [
-#                 [0.03909857, -0.00024484],
-#                 [-0.00024484, 0.01006793]
-#             ],
-#             [
-#                 [0.03957697, 0.00043603],
-#                 [0.00043603, 0.08887145]
-#             ]
-#         ]
-#     )
-# }
 
 dc.cluster(
     component_count=min_comp_count,
