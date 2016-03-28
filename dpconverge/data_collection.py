@@ -2,6 +2,36 @@ from data_set import DataSet
 from flowstats import cluster
 import numpy as np
 import pandas as pd
+import multiprocessing
+
+
+def bem_cluster(input_dict):
+    model = cluster.DPMixtureModel(
+        input_dict['component_count'],
+        input_dict['iteration_count'],
+        burn_in=0,
+        model='bem'
+    )
+
+    bem_results = model.fit(
+        input_dict['data'],
+        False,
+        seed=input_dict['random_seed'],
+        munkres_id=False,
+        verbose=True
+    )
+
+    dp_mixture_iter = bem_results.get_iteration(0)
+    log_like = dp_mixture_iter.log_likelihood(input_dict['data'])
+
+    true_comp_count = np.sum(bem_results.pis > 0.0001)
+
+    return {
+        'comp': input_dict['component_count'],
+        'true_comp': true_comp_count,
+        'seed': input_dict['random_seed'],
+        'log_like': log_like
+    }
 
 
 class DataCollection(object):
@@ -31,15 +61,6 @@ class DataCollection(object):
             self.data_sets.append(data_set)
 
     def estimate_initial_conditions(self, max_comp=128, max_iter=5000):
-        # create a data set that's the combination of all data sets
-        prelim_ds = DataSet(parameter_count=self._parameter_count)
-
-        for i, ds in enumerate(self.data_sets):
-            # start blob labels at 1 (i + 1)
-            prelim_ds.add_blob(i + 1, np.vstack(ds.blobs.values()))
-
-        prelim_ds.plot_blobs(prelim_ds.labels, x_lim=[0, 4], y_lim=[0, 4])
-
         # now run bem on the combined data set to get initial conditions
         max_log_like = None  # the highest value for all runs
         converged = False
@@ -48,48 +69,44 @@ class DataCollection(object):
 
         results = []  # will be a list of dicts to convert to a DataFrame
 
+        cpu_count = multiprocessing.cpu_count()
+        bem_pool = multiprocessing.Pool(processes=cpu_count)
+
+        data = np.vstack(
+            [np.vstack(ds.blobs.values()) for ds in self.data_sets]
+        )
+
         while not converged:
             print component_count
 
             new_comp_counts = []
 
-            for seed in range(1, 13):
-                prelim_ds.results = None  # reset results
+            # set of dictionaries for this comp run, one for each seed
+            input_dicts = [
+                {
+                    'data': data,
+                    'component_count': component_count,
+                    'iteration_count': iteration_count,
+                    'random_seed': seed
+                } for seed in range(1, 17)
+            ]
 
-                prelim_ds.cluster(
-                    component_count=component_count,
-                    burn_in=0,
-                    iteration_count=iteration_count,
-                    random_seed=seed,
-                    model='bem'
-                )
+            tmp_results_list = bem_pool.map(bem_cluster, input_dicts)
 
-                log_like = prelim_ds.get_log_likelihood_trace()[0]
-                print log_like
+            for r in tmp_results_list:
+                if r['log_like'] > max_log_like:
+                    max_log_like = r['log_like']
 
-                if log_like > max_log_like:
-                    max_log_like = log_like
-
+            for r in tmp_results_list:
                 # if the new log_like is close to the max (within 1%),
                 # see if there are any empty components (pi < 0.0001)
-                if abs(max_log_like - log_like) < abs(max_log_like * 0.01):
-                    tmp_comp_count = np.sum(prelim_ds.raw_results.pis > 0.0001)
-                    new_comp_counts.append(tmp_comp_count)
+
+                if abs(max_log_like - r['log_like']) < abs(max_log_like * 0.01):
+
+                    new_comp_counts.append(r['true_comp'])
 
                     # save good run to our results
-                    results.append(
-                        {
-                            'comp': component_count,
-                            'true_comp': tmp_comp_count,
-                            'seed': seed,
-                            'log_like': log_like,
-                            'pis': prelim_ds.raw_results.pis,
-                            'mus': prelim_ds.raw_results.mus,
-                            'sigmas': prelim_ds.raw_results.sigmas
-                        }
-                    )
-
-                    # prelim_ds.plot_classifications(0)
+                    results.append(r)
 
             if len(new_comp_counts) > 0:
                 if int(np.mean(new_comp_counts)) < component_count:
@@ -109,7 +126,12 @@ class DataCollection(object):
 
         best_run = results[best_index]
 
-        prelim_ds.results = None
+        # create a data set that's the combination of all data sets
+        prelim_ds = DataSet(parameter_count=self._parameter_count)
+
+        for i, ds in enumerate(self.data_sets):
+            # start blob labels at 1 (i + 1)
+            prelim_ds.add_blob(i + 1, np.vstack(ds.blobs.values()))
 
         prelim_ds.cluster(
             component_count=best_run['comp'],
