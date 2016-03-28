@@ -1,7 +1,5 @@
 from dpconverge.data_set import DataSet
 from dpconverge.data_collection import DataCollection
-import numpy as np
-import pandas as pd
 from sklearn.datasets.samples_generator import make_blobs
 
 
@@ -144,11 +142,14 @@ dc.cluster(
     initial_conditions=initial_conditions
 )
 
+# get valid components, but ignore weight since one sample may have
+# a component the others do not. Since the mus and sigmas are the same
+# for all samples, we can just test one sample
+valid_components = dc.data_sets[0].get_valid_components(ignore_weight=True)
+
+print "Recommended component count: ", len(valid_components)
+
 for r_ds in dc.data_sets:
-    valid_components = r_ds.get_valid_components()
-
-    print "Recommended component count: ", len(valid_components)
-
     for i in range(component_count):
         if i in valid_components:
             r_ds.plot_iteration_traces(i)
