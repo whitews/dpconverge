@@ -158,7 +158,7 @@ class DataSet(object):
             iteration_count
         )
 
-    def test_component(self, component_dataframe):
+    def test_component(self, component_dataframe, ignore_weight=False):
         """
         Tests a given component dataframe for convergence, returning
         True for converged components
@@ -171,23 +171,22 @@ class DataSet(object):
         kurt_range = [-1.5, 0.75]  # accept shorter tails for bang-on data
         weight_low = 0.008
 
-        # perform weight test first
-        if component_dataframe.weight.mean() < weight_low:
-            return False
+        # perform weight test first if not ignored
+        if not ignore_weight:
+            if component_dataframe.weight.mean() < weight_low:
+                return False
 
-        if skew(component_dataframe.weight) < skew_range[0]:
-            return False
+            if skew(component_dataframe.weight) < skew_range[0]:
+                return False
 
-        if skew(component_dataframe.weight) > skew_range[1]:
-            return False
+            if skew(component_dataframe.weight) > skew_range[1]:
+                return False
 
-        if kurtosis(component_dataframe.weight) < kurt_range[0]:
-            return False
+            if kurtosis(component_dataframe.weight) < kurt_range[0]:
+                return False
 
-        if kurtosis(component_dataframe.weight) > kurt_range[1]:
-            return False
-
-        # component_dataframe.weight.std()
+            if kurtosis(component_dataframe.weight) > kurt_range[1]:
+                return False
 
         # now for the component parameter locations
         for param in ['loc'+str(i) for i in range(self._parameter_count)]:
@@ -203,12 +202,10 @@ class DataSet(object):
             if kurtosis(component_dataframe[param]) > kurt_range[1]:
                 return False
 
-            # component_dataframe[param].std()
-
         # all tests passed
         return True
 
-    def get_valid_components(self):
+    def get_valid_components(self, ignore_weight=False):
         if self.raw_results is None:
             raise ValueError("Data set has no saved results")
 
@@ -217,7 +214,10 @@ class DataSet(object):
 
         for comp in self.results.component.unique():
             comp_data = self.results[self.results.component == comp]
-            comp_passed = self.test_component(comp_data)
+            comp_passed = self.test_component(
+                comp_data,
+                ignore_weight=ignore_weight
+            )
             if comp_passed:
                 good_comps.append(comp)
 
