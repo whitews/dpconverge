@@ -24,6 +24,8 @@ def bem_cluster(input_dict):
     dp_mixture_iter = bem_results.get_iteration(0)
     log_like = dp_mixture_iter.log_likelihood(input_dict['data'])
 
+    print log_like
+
     true_comp_count = np.sum(bem_results.pis > 0.0001)
 
     return {
@@ -59,6 +61,11 @@ class DataCollection(object):
             )
         else:
             self.data_sets.append(data_set)
+
+    def reset_results(self):
+        for ds in self.data_sets:
+            ds.results = None
+            ds.raw_results = None
 
     def estimate_initial_conditions(self, max_comp=128, max_iter=5000):
         # now run bem on the combined data set to get initial conditions
