@@ -227,3 +227,5 @@ class DataCollection(object):
         # save results for each DataSet
         for i, ds in enumerate(self.data_sets):
             ds.add_results(fitted_results[i])
+
+        return fitted_results
