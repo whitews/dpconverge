@@ -126,7 +126,7 @@ class DataSet(object):
 
         self.raw_results = model.fit(
             np.vstack(self.blobs.values()),
-            True,
+            device=0,
             seed=random_seed,
             munkres_id=False,
             verbose=True
