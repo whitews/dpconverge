@@ -24,7 +24,7 @@ for i_ds in range(0, 2):
 
         ds.add_blob(i, X)
 
-    ds.plot_blobs(ds.classifications, x_lim=[0, 6], y_lim=[0, 6])
+    ds.plot_blobs(ds.labels, x_lim=[0, 6], y_lim=[0, 6])
 
     dc.add_data_set(ds)
 

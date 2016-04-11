@@ -21,7 +21,7 @@ for i, center in enumerate(centers):
 
 component_count = 5
 
-ds.plot_blobs(ds.classifications, x_lim=[0, 6], y_lim=[0, 6])
+ds.plot_blobs(ds.labels, x_lim=[0, 6], y_lim=[0, 6])
 ds.cluster(
     component_count=component_count,
     burn_in=1000,
