@@ -54,7 +54,7 @@ ds.add_blob(3, blob3)
 ds.add_blob(4, blob4)
 ds.add_blob(5, blob5)
 
-ds.plot_blobs(ds.classifications, x_lim=[0, 4], y_lim=[0, 4])
+ds.plot_blobs(ds.labels, x_lim=[0, 4], y_lim=[0, 4])
 
 component_count = 16
 iteration_count = 100
