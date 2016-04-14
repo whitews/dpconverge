@@ -105,7 +105,8 @@ class DataSet(object):
             iteration_count,
             random_seed,
             initial_conditions=None,
-            model='dp'
+            model='dp',
+            normed=False
     ):
         if self.results is not None:
             raise ValueError("Data set already has clustering results")
@@ -129,7 +130,8 @@ class DataSet(object):
             device=0,
             seed=random_seed,
             munkres_id=False,
-            verbose=True
+            verbose=True,
+            normed=normed
         )
 
         self.results = self._create_results_dataframe(
@@ -163,6 +165,7 @@ class DataSet(object):
         Tests a given component dataframe for convergence, returning
         True for converged components
         :param component_dataframe: Pandas dataframe
+        :param ignore_weight: boolean
         :return: boolean
         """
 
