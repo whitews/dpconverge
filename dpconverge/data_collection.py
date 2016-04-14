@@ -15,7 +15,7 @@ def bem_cluster(input_dict):
 
     bem_results = model.fit(
         input_dict['data'],
-        False,
+        0,
         seed=input_dict['random_seed'],
         munkres_id=False,
         verbose=True
@@ -217,7 +217,7 @@ class DataCollection(object):
 
         fitted_results = model.fit(
             data_sets,
-            True,
+            0,
             seed=random_seed,
             munkres_id=False,
             verbose=True,
