@@ -174,6 +174,10 @@ while not converged:
                 }
             )
 
+            # we found a stable run at this component count, no need to
+            # keep testing it, move on to the next higher comp count
+            break
+
     if len(results) > last_results_count:
         # still generating stable chains, bump the component count and
         # keep going
