@@ -262,6 +262,44 @@ class DataSet(object):
 
         return fig
 
+    def plot_param_iteration_trace(
+            self,
+            component,
+            parameter,
+            figure_size=None
+    ):
+        if figure_size is not None:
+            fig = pyplot.figure(figsize=figure_size)
+        else:
+            fig = pyplot.figure(figsize=(16, 4))
+
+        param = 'loc' + str(parameter)
+
+        ds_comp = self.results[self.results.component == component]
+
+        comp_param_skew = skew(ds_comp[param])
+        comp_param_kurt = kurtosis(ds_comp[param])
+
+        ax = fig.add_subplot(1, 1, 1)
+
+        ax.set_title(
+            'Component: %d, Param: %s, Skew: %.2f, Kurt: %.2f' %
+            (component, param, comp_param_skew, comp_param_kurt)
+        )
+
+        ax.set_xlim(0, len(ds_comp.iteration))
+        ax.set_ylim(ds_comp[param].min()/1.5, ds_comp[param].max())
+
+        ax.plot(
+            ds_comp.iteration,
+            ds_comp[param],
+            'dodgerblue',
+            lw='0.5',
+            alpha=0.8
+        )
+
+        pyplot.show()
+
     def plot_iteration_traces(self, component):
         fig = pyplot.figure(figsize=(16, 4 * self._parameter_count))
         subplot_n = 1
